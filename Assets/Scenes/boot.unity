@@ -389,7 +389,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1374210217}
+      - m_Target: {fileID: 1374210219}
         m_MethodName: OnSwitchCacheCompress
         m_Mode: 1
         m_Arguments:
@@ -511,7 +511,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1374210217}
+      - m_Target: {fileID: 1374210219}
         m_MethodName: OnLoadFromCacheOrDownload
         m_Mode: 1
         m_Arguments:
@@ -817,7 +817,7 @@ MonoBehaviour:
   m_OnEndEdit:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1374210217}
+      - m_Target: {fileID: 1374210219}
         m_MethodName: OnInputEnded
         m_Mode: 1
         m_Arguments:
@@ -1108,6 +1108,7 @@ GameObject:
   m_Component:
   - 4: {fileID: 1374210218}
   - 114: {fileID: 1374210217}
+  - 114: {fileID: 1374210219}
   m_Layer: 0
   m_Name: Manager
   m_TagString: Untagged
@@ -1126,9 +1127,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fbdc4ec5e0cdd41fbbb3748f69e909a9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  usingStreamingAsssetPath: {fileID: 1825002551}
-  cacheCompress: {fileID: 118685521}
-  assetBundlePath: {fileID: 1072965156}
 --- !u!4 &1374210218
 Transform:
   m_ObjectHideFlags: 0
@@ -1142,6 +1140,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 4
+--- !u!114 &1374210219
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1374210216}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b00739b7147c6433f8e72bb8e3a9cd27, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  usingStreamingAsssetPath: {fileID: 1886653843}
+  cacheCompress: {fileID: 118685521}
+  assetBundlePath: {fileID: 1072965156}
 --- !u!1 &1504242701
 GameObject:
   m_ObjectHideFlags: 0
@@ -1354,7 +1366,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1374210217}
+      - m_Target: {fileID: 1374210219}
         m_MethodName: OnCleanCache
         m_Mode: 1
         m_Arguments:
@@ -1624,7 +1636,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1374210217}
+      - m_Target: {fileID: 1374210219}
         m_MethodName: OnLoadFromFile
         m_Mode: 1
         m_Arguments:
@@ -1820,7 +1832,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1374210217}
+      - m_Target: {fileID: 1374210219}
         m_MethodName: OnUnloadAssetBundle
         m_Mode: 1
         m_Arguments:
@@ -2017,7 +2029,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1374210217}
+      - m_Target: {fileID: 1374210219}
         m_MethodName: OnSwitchUsingStreamingAssetsPath
         m_Mode: 1
         m_Arguments:

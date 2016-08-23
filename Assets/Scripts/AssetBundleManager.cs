@@ -1,79 +1,52 @@
-﻿using System.IO;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using System.Collections.Generic;
 
 public class AssetBundleManager : MonoBehaviour {
 
+//	private Dictionary<string, AssetBundleEx> _assetBundlePool = new List<AssetBundle> ();
 	AssetBundle ab;
-
-	public Text usingStreamingAsssetPath;
-	public Text cacheCompress;
-	public InputField assetBundlePath;
-
-	private string _assetBundlePath = "";
-	private bool _usingStreamAssetPath = false;
-	private bool _cacheCompress = false;
-	// Use this for initialization
-	void Start () {
-		Caching.compressionEnabled = _cacheCompress;
-		usingStreamingAsssetPath.text = _usingStreamAssetPath.ToString ();
-		cacheCompress.text = _cacheCompress.ToString ();
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
-
-	public void OnInputEnded()
+	private static AssetBundleManager _instance = null;
+	public static AssetBundleManager Instance
 	{
-		_assetBundlePath = assetBundlePath.text;
-	}
-
-	public void OnSwitchUsingStreamingAssetsPath()
-	{
-		_usingStreamAssetPath = !_usingStreamAssetPath;
-		usingStreamingAsssetPath.text = _usingStreamAssetPath.ToString ();
-		assetBundlePath.gameObject.SetActive(!_usingStreamAssetPath);
-	}
-
-	public void OnSwitchCacheCompress()
-	{
-		_cacheCompress = !_cacheCompress;
-		Caching.compressionEnabled = _cacheCompress;
-		cacheCompress.text = _cacheCompress.ToString ();
-
-	}
-
-	public void OnLoadFromFile()
-	{
-		string path = "";	
-		if (_usingStreamAssetPath) {
-			path = Path.Combine (Application.streamingAssetsPath, "cube");
-		} else {
-			path = Path.Combine (_assetBundlePath, "cube");
+		get
+		{ 
+			return _instance;
 		}
+	}
+	void Awake()
+	{
+		if (_instance == null) {
+			_instance = this;
+		} else {
+			Object.DestroyImmediate (_instance);
+			_instance = this;
+		}
+	}
+
+	public void LoadFromFile(string path)
+	{
 		Debug.Log ("Get Asset Bundle From : " + path);
 		ab = AssetBundle.LoadFromFile (path);
 		if (ab == null) {
 			Debug.LogError ("Cannot Load Asset Budnle From : " + path);
 		} else {
 			Debug.Log ("Success Load Asset Bundle From : " + path);
+//			_assetBundlePool.Add (ab);
 		}
 	}
 
-	public void OnLoadFromCacheOrDownload()
+	public void LoadFromCacheOrDownload(string path)
 	{
-		string path = "";	
-		if (_usingStreamAssetPath) {
-			path = Path.Combine (Application.streamingAssetsPath, "cube");
-		} else {
-			path = Path.Combine (_assetBundlePath, "cube");
-		}
 		Debug.Log ("Get Asset Bundle From : " + path);
 		StartCoroutine (DoLoadFromCacheOrDownload (path));
+	}
 
+	public void UnloadAssetBundle()
+	{
+		ab.Unload (true);
+		ab = null;
 	}
 
 	IEnumerator DoLoadFromCacheOrDownload(string path)
@@ -88,21 +61,11 @@ public class AssetBundleManager : MonoBehaviour {
 			Debug.LogError ("Cannot Load Asset Budnle From : " + path);
 		} else {
 			Debug.Log ("Success Load Asset Bundle From : " + path);
+//			_assetBundlePool.Add (ab);
 		}
 		www.Dispose ();
 		www = null;
 	}
 
-	public void OnCleanCache()
-	{
-		Caching.CleanCache ();
-	}
 
-
-
-	public void OnUnloadAssetBundle()
-	{
-		ab.Unload (true);
-		ab = null;
-	}
 }
