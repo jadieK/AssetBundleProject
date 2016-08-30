@@ -1,10 +1,14 @@
 ManifestFileVersion: 0
-CRC: 2616551131
+CRC: 3995303623
 AssetBundleManifest:
   AssetBundleInfos:
     Info_0:
-      Name: cube
+      Name: sceneboot
       Dependencies: {}
     Info_1:
-      Name: sceneboot
+      Name: cube
+      Dependencies:
+        Dependency_0: res
+    Info_2:
+      Name: res
       Dependencies: {}
