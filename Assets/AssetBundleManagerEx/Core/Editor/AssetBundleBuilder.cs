@@ -144,16 +144,17 @@ public class AssetBundleBuilder
 				AssetConfig curAssetConfig = curABC.assetConfigList [assetIndex];
 				if (System.IO.File.Exists (curAssetConfig.assetPath))
 				{
-					NodeTreeView.AssetNode aNode = new NodeTreeView.AssetNode ();
-					aNode.assetPath = curAssetConfig.assetPath;
+					NodeTreeView.AssetNode aNode = new NodeTreeView.AssetNode (curAssetConfig.assetPath);
 					aNode.nodeText = Path.GetFileName(curAssetConfig.assetPath);
 					string[] dependencies = AssetDatabase.GetDependencies (curAssetConfig.assetPath);
+					NodeTreeView.BaseNode depRootNode = new NodeTreeView.BaseNode ();
+					depRootNode.nodeText = "Dependencies";
+					aNode.childNodes.Add (depRootNode);
 					for (int depIndex = 0; depIndex < dependencies.Length; depIndex++)
 					{
-						NodeTreeView.AssetNode depNode = new NodeTreeView.AssetNode ();
-						depNode.assetPath = dependencies [depIndex];
+						NodeTreeView.AssetNode depNode = new NodeTreeView.AssetNode (dependencies [depIndex]);
 						depNode.nodeText = Path.GetFileName (dependencies [depIndex]);
-						aNode.childNodes.Add (depNode);
+						depRootNode.childNodes.Add (depNode);
 					}
 					abNode.childNodes.Add (aNode);
 				}

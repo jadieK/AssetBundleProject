@@ -9,12 +9,17 @@ namespace NodeTreeView
 		private static void InitNodeTree()
 		{
 			_currentSelectedNode = null;
-
 		}
 
 		public static void DrawNodeTreeView(BaseNode root)
 		{
-			DrawNodeTreeView (root, 0);	
+			DrawNodeTreeView (root, 0);
+			BaseNode checkResult = null;
+
+			if(CheckSelect (root, out checkResult))
+			{
+				_currentSelectedNode = checkResult;
+			}
 		}
 
 		private static void DrawNodeTreeView(BaseNode root, int layerCount)
@@ -27,12 +32,16 @@ namespace NodeTreeView
 					DrawNodeTreeView (curChild, layerCount + 1);
 				}
 			}
-
 		}
 
 		private static void DrawNode(BaseNode curNode, int layerCount)
 		{
-			curNode.DrawNode (layerCount, false);
+			curNode.DrawNode (layerCount, _currentSelectedNode);
+		}
+
+		private static bool CheckSelect(BaseNode curNode, out BaseNode selectedNode)
+		{
+			return curNode.CheckSelect (out selectedNode);
 		}
 	}
 }
