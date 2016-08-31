@@ -53,5 +53,10 @@ namespace NodeTreeView
 			GUI.Box(_selectionRect, nodeText, _labelStyle);
 			GUILayout.EndHorizontal ();
 		}
+
+		public virtual void OnSelected()
+		{
+			
+		}
 	}
 }

@@ -39,13 +39,25 @@ public class AssetBundleBuilder
 		}
 
 		List<AssetBundleConfig> exportData = new List<AssetBundleConfig> ();
-		foreach (string abName in AssetDatabase.GetAllAssetBundleNames ()) 
+//		foreach (string abName in AssetDatabase.GetAllAssetBundleNames ()) 
+		string[] assetBundleNames = AssetDatabase.GetAllAssetBundleNames ();
+		for(int i = 0; i < assetBundleNames.Length;i++)
 		{
+			string abName = assetBundleNames [i];
 			AssetBundleConfig curABC = new AssetBundleConfig ();
 			exportData.Add (curABC);
 
 			curABC.assetBundleName = abName;
-			curABC.assetPathsList.AddRange(AssetDatabase.GetAssetPathsFromAssetBundle (abName));
+			string[] assetPaths = AssetDatabase.GetAssetPathsFromAssetBundle (abName);
+			for (int assetPathIndex = 0; assetPathIndex < assetPaths.Length; assetPathIndex++)
+			{
+				string curAssetPath = assetPaths [assetPathIndex];
+				AssetConfig ac = new AssetConfig ();
+				ac.assetGUID = AssetDatabase.AssetPathToGUID (curAssetPath);
+				ac.assetPath = curAssetPath;
+				curABC.assetConfigList.Add (ac);
+			}
+//			curABC.assetPathsList.AddRange(AssetDatabase.GetAssetPathsFromAssetBundle (abName));
 		}
 
 		FileStream output = File.Open (outputPath, FileMode.OpenOrCreate);
@@ -65,15 +77,14 @@ public class AssetBundleBuilder
 			return;
 		}
 
-		FileStream inputFile = File.Open (inputPath, FileMode.Open);
-		byte[] inputData = new byte[inputFile.Length];
-		inputFile.Read (inputData, 0, inputData.Length);
-		inputFile.Close ();
-		List<AssetBundleConfig> importData = LitJson.JsonMapper.ToObject<List<AssetBundleConfig>>(System.Text.Encoding.Default.GetString (inputData));
-		foreach (AssetBundleConfig curABC in importData)
+		List<AssetBundleConfig> importData = GetAssetBundleConfigList (inputPath);
+		for (int i = 0;i < importData.Count;i++)
 		{
-			foreach (string curAssetPath in curABC.assetPathsList)
+			AssetBundleConfig curABC = importData [i];
+//			foreach (string curAssetPath in curABC.assetPathsList)
+			for(int assetConfigIndex = 0; assetConfigIndex < curABC.assetConfigList.Count;assetConfigIndex++)
 			{
+				string curAssetPath = curABC.assetConfigList [assetConfigIndex].assetPath;
 				AssetImporter.GetAtPath (curAssetPath).assetBundleName = curABC.assetBundleName;
 			}
 		}
@@ -83,12 +94,7 @@ public class AssetBundleBuilder
 	[MenuItem ("Tools/CustomConfig/ConfigWindow")]
 	static void ShowConfigWindow()
 	{
-		NodeTreeView.BaseNode bn = new NodeTreeView.BaseNode ();
-		bn.nodeText = "AA";
-		NodeTreeView.BaseNode ch = new NodeTreeView.BaseNode ();
-		ch.nodeText = "BB";
-		bn.childNodes.Add (ch);
-		NodeTreeView.NodeTreeViewWindow.ShowTreeViewWindow ("Test", bn);
+		AssetBundleBuilderWindow.ShowDefaultBuilderWindow ();
 	}
 
 	[MenuItem ("Tools/CleanAssetBundle")]
@@ -97,27 +103,62 @@ public class AssetBundleBuilder
 		FileUtil.DeleteFileOrDirectory ("Assets/StreamingAssets");
 	}
 
-	[MenuItem ("Tools/UploadToServer")]
-	static void UploadToServer()
-	{
-		System.IO.DirectoryInfo dirInfo = new System.IO.DirectoryInfo ("Assets/StreamingAssets");
-		foreach (System.IO.FileInfo curFileInfo in  dirInfo.GetFiles())
-		{
-			string sourcePath = curFileInfo.FullName;
-			string targetPath = "/Users/chuangao/httpserver/" + curFileInfo.Name;
-			Debug.Log ("Upload File From " + sourcePath + " To " + targetPath);
-			System.IO.File.Copy (sourcePath, targetPath, true);
-		}
+//	[MenuItem ("Tools/UploadToServer")]
+//	static void UploadToServer()
+//	{
+//		System.IO.DirectoryInfo dirInfo = new System.IO.DirectoryInfo ("Assets/StreamingAssets");
+//		foreach (System.IO.FileInfo curFileInfo in  dirInfo.GetFiles())
+//		{
+//			string sourcePath = curFileInfo.FullName;
+//			string targetPath = "/Users/chuangao/httpserver/" + curFileInfo.Name;
+//			Debug.Log ("Upload File From " + sourcePath + " To " + targetPath);
+//			System.IO.File.Copy (sourcePath, targetPath, true);
+//		}
+//
+////		FileUtil.MoveFileOrDirectory("Asset/StreamingAssets/", "/Users/chuangao/httpserver/");
+//	}
 
-//		FileUtil.MoveFileOrDirectory("Asset/StreamingAssets/", "/Users/chuangao/httpserver/");
+	private static List<AssetBundleConfig> GetAssetBundleConfigList(string configFilePath)
+	{
+		FileStream inputFile = File.Open (configFilePath, FileMode.Open);
+		byte[] inputData = new byte[inputFile.Length];
+		inputFile.Read (inputData, 0, inputData.Length);
+		inputFile.Close ();
+		return LitJson.JsonMapper.ToObject<List<AssetBundleConfig>>(System.Text.Encoding.Default.GetString (inputData));
 	}
-	// Use this for initialization
-	void Start () {
-	
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
+
+	public static NodeTreeView.BaseNode GenerateTreeViewNodes(string configFilePath)
+	{
+		List<AssetBundleConfig> assetBundleConfigList = GetAssetBundleConfigList (configFilePath);
+		NodeTreeView.BaseNode rootNode = new NodeTreeView.BaseNode ();
+		rootNode.nodeText = "root";
+//		foreach (AssetBundleConfig curABC in assetBundleConfigList)
+		for(int i = 0; i < assetBundleConfigList.Count;i++)
+		{
+			AssetBundleConfig curABC = assetBundleConfigList [i];
+			NodeTreeView.AssetBundleNode abNode = new NodeTreeView.AssetBundleNode ();
+			rootNode.childNodes.Add (abNode);
+			abNode.nodeText = curABC.assetBundleName;
+			for (int assetIndex = 0; assetIndex < curABC.assetConfigList.Count; assetIndex++)
+			{
+				AssetConfig curAssetConfig = curABC.assetConfigList [assetIndex];
+				if (System.IO.File.Exists (curAssetConfig.assetPath))
+				{
+					NodeTreeView.AssetNode aNode = new NodeTreeView.AssetNode ();
+					aNode.assetPath = curAssetConfig.assetPath;
+					aNode.nodeText = Path.GetFileName(curAssetConfig.assetPath);
+					string[] dependencies = AssetDatabase.GetDependencies (curAssetConfig.assetPath);
+					for (int depIndex = 0; depIndex < dependencies.Length; depIndex++)
+					{
+						NodeTreeView.AssetNode depNode = new NodeTreeView.AssetNode ();
+						depNode.assetPath = dependencies [depIndex];
+						depNode.nodeText = Path.GetFileName (dependencies [depIndex]);
+						aNode.childNodes.Add (depNode);
+					}
+					abNode.childNodes.Add (aNode);
+				}
+			}
+		}
+		return rootNode;
 	}
 }
