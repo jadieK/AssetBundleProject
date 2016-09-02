@@ -32,12 +32,14 @@ namespace NodeTreeView
 			_labelStyle = new GUIStyle(EditorStyles.label);
 			_labelStyle.fixedHeight = height;
 			_labelStyle.alignment = TextAnchor.MiddleLeft;
+//			_selectedStyle = UnityEditor.EditorStyles.textArea;//new GUIStyle ();//
 			_selectedStyle = new GUIStyle();
-			_selectedStyle.normal.background = CreateTexture (600, 1, Color.blue);
+			_selectedStyle.normal.background = CreateTexture (600, 1, Color.grey);
 		}
 
 		public void DrawNode(int layer, BaseNode currentSelected)
 		{
+			
 			if (currentSelected == this)
 			{
 				GUILayout.BeginHorizontal (_selectedStyle);
@@ -55,18 +57,33 @@ namespace NodeTreeView
 			content.text = nodeText;
 			_selectionRect = GUILayoutUtility.GetRect(content, _labelStyle);
 			GUI.Box(_selectionRect, nodeText, _labelStyle);
+			DrawExtra (layer, currentSelected);
 			GUILayout.EndHorizontal ();
+			DoAction ();
+		}
+
+		protected virtual void DrawExtra(int layer, BaseNode currentSelected)
+		{
+		}
+
+		protected virtual void DoAction()
+		{
 		}
 
 		public bool CheckSelect(out BaseNode selectedNode)
 		{
 			selectedNode = null;
-			bool isSelected = _selectionRect.Contains(Event.current.mousePosition) && Event.current.type == EventType.mouseDown;
-			if (isSelected)
+			bool isLeftClick = Event.current.type == EventType.mouseDown && _selectionRect.Contains(Event.current.mousePosition);
+			bool isRightClick = Event.current.type == EventType.ContextClick && _selectionRect.Contains(Event.current.mousePosition);
+			if (isLeftClick)
 			{
-				OnSelected ();
+				OnLeftSelected ();
 				selectedNode = this;
 				return true;
+			}
+			else if (isRightClick)
+			{
+				OnRightSelected ();
 			}
 			else
 			{
@@ -81,9 +98,13 @@ namespace NodeTreeView
 			return false;
 		}
 
-		protected virtual void OnSelected()
+		protected virtual void OnLeftSelected()
 		{
 			
+		}
+
+		protected virtual void OnRightSelected()
+		{
 		}
 
 		public static Texture2D CreateTexture(int width, int height, Color color)
