@@ -1,0 +1,10 @@
+Assets/NothingIsEasy.meta
+Assets/NothingIsEasy/
+Assets/StreamingAssets/
+Library/
+Temp/
+obj/
+Assembly-CSharp-Editor.csproj
+Assembly-CSharp.csproj
+AssetBundleProject.sln
+AssetBundleProject.userprefs
